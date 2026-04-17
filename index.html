@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grocery List</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Grocery List</h1>
+      <nav>
+        <button class="tab-btn active" data-tab="grocery">Grocery List</button>
+        <button class="tab-btn" data-tab="meals">Meals</button>
+      </nav>
+    </header>
+
+    <!-- Grocery List Tab -->
+    <section id="tab-grocery" class="tab-content active">
+
+      <!-- Category management -->
+      <div id="category-bar">
+        <div id="category-chips"></div>
+        <button id="add-category-btn" class="btn-ghost">+ Add Category</button>
+        <form id="add-category-form" class="hidden">
+          <input type="text" id="new-category-name" placeholder="Category name" maxlength="40" />
+          <button type="submit" class="btn-primary">Add</button>
+          <button type="button" id="cancel-category-btn" class="btn-ghost">Cancel</button>
+        </form>
+      </div>
+
+      <!-- Add item form -->
+      <form id="add-item-form">
+        <input type="text" id="new-item-name" placeholder="Item name" required maxlength="80" />
+        <input type="number" id="new-item-qty" value="1" min="0.01" step="any" required />
+        <div class="category-picker-wrapper">
+          <button type="button" id="item-category-picker-btn" class="btn-ghost">Category</button>
+          <div id="item-category-dropdown" class="category-dropdown hidden"></div>
+        </div>
+        <button type="submit" class="btn-primary">Add Item</button>
+      </form>
+
+      <!-- Grocery list grouped by category -->
+      <div id="grocery-list"></div>
+    </section>
+
+    <!-- Meals Tab -->
+    <section id="tab-meals" class="tab-content hidden">
+
+      <div id="meals-top-bar">
+        <button id="new-meal-btn" class="btn-primary">+ New Meal</button>
+      </div>
+
+      <!-- Meal builder panel (shown when creating a new meal) -->
+      <div id="meal-builder" class="hidden"></div>
+
+      <div id="meals-list"></div>
+    </section>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal-backdrop" class="hidden">
+    <div id="modal">
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
