@@ -1,5 +1,11 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+input[type="text"],
+input[type="number"],
+textarea {
+  font-size: 16px;
+}
+
 :root {
   --bg: #f7f7f5;
   --surface: #ffffff;
