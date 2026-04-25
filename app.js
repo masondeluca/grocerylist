@@ -50,6 +50,11 @@ function removeItem(id) {
   saveState();
 }
 
+function clearList() {
+  state.items = [];
+  saveState();
+}
+
 function toggleItem(id) {
   const item = state.items.find(i => i.id === id);
   if (item) { item.checked = !item.checked; saveState(); }
@@ -233,12 +238,15 @@ function renderGroceryTab() {
 
 function renderGroceryList() {
   const container = document.getElementById('grocery-list');
+  const header = document.getElementById('grocery-list-header');
   container.innerHTML = '';
 
   if (state.items.length === 0) {
+    header.classList.add('hidden');
     container.innerHTML = '<div class="empty-state">No items yet. Add something above!</div>';
     return;
   }
+  header.classList.remove('hidden');
 
   const sections = [];
   state.categories.forEach(cat => {
@@ -650,6 +658,14 @@ function wireEvents() {
     if (!name || isNaN(qty)) return;
     editItem(itemId, name, qty, cats);
     renderGroceryList();
+  });
+
+  // ── Clear list button ──
+
+  document.getElementById('clear-list-btn').addEventListener('click', () => {
+    confirmDelete('Clear all items from your grocery list? Your saved meals will not be affected.', () => {
+      clearList(); renderGroceryList();
+    });
   });
 
   // ── New meal button ──

@@ -107,6 +107,23 @@ nav {
 }
 .btn-ghost:hover { background: var(--border); }
 
+.btn-danger-ghost {
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-danger-ghost:hover { background: var(--danger); color: #fff; }
+
+.list-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .btn-icon {
   background: none;
   border: none;
