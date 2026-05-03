@@ -34,7 +34,14 @@ function newId() {
 // ─── CRUD: grocery items ──────────────────────────────────────────────────────
 
 function addItem(name, quantity, categoryIds) {
-  state.items.push({ id: newId(), name, quantity, checked: false, categoryIds });
+  const existing = state.items.find(i => i.name.toLowerCase() === name.toLowerCase());
+  if (existing) {
+    existing.quantity = Number(existing.quantity) + Number(quantity);
+    const merged = new Set([...(existing.categoryIds || []), ...(categoryIds || [])]);
+    existing.categoryIds = [...merged];
+  } else {
+    state.items.push({ id: newId(), name, quantity, checked: false, categoryIds });
+  }
   saveState();
 }
 
