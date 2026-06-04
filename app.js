@@ -200,7 +200,9 @@ function catTagsHtml(categoryIds) {
 
 function renderCategoryBar() {
   const chips = document.getElementById('category-chips');
+  const hint = document.getElementById('category-hint');
   chips.innerHTML = '';
+  hint.classList.toggle('hidden', state.categories.length > 0);
   state.categories.forEach(cat => {
     const chip = document.createElement('span');
     chip.className = 'category-chip';

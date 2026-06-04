@@ -150,6 +150,16 @@ nav {
   gap: 8px;
 }
 
+.category-hint {
+  width: 100%;
+  font-size: 13px;
+  color: #92651a;
+  background: #fef9ec;
+  border: 1px solid #f5d97a;
+  border-radius: 6px;
+  padding: 7px 10px;
+}
+
 #category-chips {
   display: flex;
   flex-wrap: wrap;
