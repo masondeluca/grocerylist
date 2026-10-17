@@ -94,12 +94,19 @@ body {
 
 /* Header */
 header {
-  padding: 28px 0 20px;
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 200;
+  background: var(--bg);
+  padding: 14px 16px;
+  margin: 0 -16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 h1 {
