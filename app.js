@@ -432,6 +432,26 @@ function builderItemEditRowHtml(bi) {
 // ─── Render: meals tab ────────────────────────────────────────────────────────
 
 const expandedMeals = new Set();
+const mealSortMode = new Map(); // meal id → 'default' | 'alpha' | 'category'
+
+function sortedMealItems(meal) {
+  const mode = mealSortMode.get(meal.id) || 'default';
+  const items = [...meal.items];
+  if (mode === 'alpha') {
+    items.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  } else if (mode === 'category') {
+    const catName = id => {
+      const cat = state.categories.find(c => c.id === id);
+      return cat ? cat.name.toLowerCase() : '';
+    };
+    items.sort((a, b) => {
+      const aCat = (a.categoryIds || []).map(catName).sort()[0] || 'zzz';
+      const bCat = (b.categoryIds || []).map(catName).sort()[0] || 'zzz';
+      return aCat.localeCompare(bCat);
+    });
+  }
+  return items;
+}
 
 function renderMealsTab() {
   const container = document.getElementById('meals-list');
@@ -451,9 +471,12 @@ function buildMealCard(meal) {
   card.className = 'meal-card';
   card.dataset.id = meal.id;
 
+  const currentSort = mealSortMode.get(meal.id) || 'default';
+  const displayItems = sortedMealItems(meal);
+
   const itemsHtml = meal.items.length === 0
     ? '<div class="meal-empty">No items in this meal.</div>'
-    : meal.items.map(mi => `
+    : displayItems.map(mi => `
         <div class="meal-item-row" data-item-id="${mi.id}">
           <span class="meal-item-name">${escHtml(mi.name)}</span>
           <span class="meal-item-qty">×${mi.quantity}</span>
@@ -466,6 +489,18 @@ function buildMealCard(meal) {
       <button class="btn-collapse" title="${expanded ? 'Collapse' : 'Expand'}">${expanded ? '▾' : '▸'}</button>
       <span class="meal-title">${escHtml(meal.name)}</span>
       <div class="meal-header-actions">
+        <div class="meal-sort-wrapper">
+          <button class="btn-icon btn-sort-meal${currentSort !== 'default' ? ' sort-active' : ''}" title="Sort items">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/>
+            </svg>
+          </button>
+          <div class="meal-sort-dropdown hidden">
+            <button class="sort-option${currentSort === 'default' ? ' active' : ''}" data-sort="default">Default order</button>
+            <button class="sort-option${currentSort === 'alpha' ? ' active' : ''}" data-sort="alpha">A to Z</button>
+            <button class="sort-option${currentSort === 'category' ? ' active' : ''}" data-sort="category">By category</button>
+          </div>
+        </div>
         <button class="btn-icon edit-meal-btn" title="Edit meal">✎</button>
         <button class="btn-icon danger remove-meal-btn" title="Delete meal">×</button>
       </div>
@@ -481,6 +516,19 @@ function buildMealCard(meal) {
     if (expandedMeals.has(meal.id)) expandedMeals.delete(meal.id);
     else expandedMeals.add(meal.id);
     renderMealsTab();
+  });
+
+  const sortBtn = card.querySelector('.btn-sort-meal');
+  const sortDropdown = card.querySelector('.meal-sort-dropdown');
+  sortBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    sortDropdown.classList.toggle('hidden');
+  });
+  sortDropdown.querySelectorAll('.sort-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      mealSortMode.set(meal.id, opt.dataset.sort);
+      renderMealsTab();
+    });
   });
 
   return card;
@@ -945,6 +993,9 @@ function wireEvents() {
     // Close all dropdowns on outside click
     if (!e.target.closest('.category-picker-wrapper') && e.target.id !== 'item-category-picker-btn') {
       document.querySelectorAll('.category-dropdown').forEach(d => d.classList.add('hidden'));
+    }
+    if (!e.target.closest('.meal-sort-wrapper')) {
+      document.querySelectorAll('.meal-sort-dropdown').forEach(d => d.classList.add('hidden'));
     }
   });
 }
