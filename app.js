@@ -431,7 +431,7 @@ function builderItemEditRowHtml(bi) {
 
 // ─── Render: meals tab ────────────────────────────────────────────────────────
 
-const collapsedMeals = new Set();
+const expandedMeals = new Set();
 
 function renderMealsTab() {
   const container = document.getElementById('meals-list');
@@ -460,26 +460,26 @@ function buildMealCard(meal) {
           ${catTagsHtml(mi.categoryIds)}
         </div>`).join('');
 
-  const collapsed = collapsedMeals.has(meal.id);
+  const expanded = expandedMeals.has(meal.id);
   card.innerHTML = `
     <div class="meal-header">
-      <button class="btn-collapse" title="${collapsed ? 'Expand' : 'Collapse'}">${collapsed ? '▸' : '▾'}</button>
+      <button class="btn-collapse" title="${expanded ? 'Collapse' : 'Expand'}">${expanded ? '▾' : '▸'}</button>
       <span class="meal-title">${escHtml(meal.name)}</span>
       <div class="meal-header-actions">
         <button class="btn-icon edit-meal-btn" title="Edit meal">✎</button>
         <button class="btn-icon danger remove-meal-btn" title="Delete meal">×</button>
       </div>
     </div>
-    <div class="meal-body${collapsed ? ' hidden' : ''}">
+    <div class="meal-body${expanded ? '' : ' hidden'}">
       <div class="meal-items">${itemsHtml}</div>
     </div>
-    <div class="meal-footer${collapsed ? ' hidden' : ''}">
+    <div class="meal-footer${expanded ? '' : ' hidden'}">
       <button class="btn-add-to-list" ${meal.items.length === 0 ? 'disabled' : ''}>Add to Grocery List</button>
     </div>`;
 
   card.querySelector('.btn-collapse').addEventListener('click', () => {
-    if (collapsedMeals.has(meal.id)) collapsedMeals.delete(meal.id);
-    else collapsedMeals.add(meal.id);
+    if (expandedMeals.has(meal.id)) expandedMeals.delete(meal.id);
+    else expandedMeals.add(meal.id);
     renderMealsTab();
   });
 

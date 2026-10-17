@@ -629,7 +629,7 @@ nav {
 }
 .meal-header:has(+ .meal-body.hidden) {
   border-bottom: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius) var(--radius) var(--radius) var(--radius);
 }
 
 .meal-title {
