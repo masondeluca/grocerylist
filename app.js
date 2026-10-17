@@ -549,11 +549,15 @@ function openMealModal(mealId) {
     </div>
     <div class="modal-actions">
       <button class="btn-ghost" id="modal-cancel-btn">Cancel</button>
+      <button class="btn-ghost" id="modal-unselect-btn">Unselect All</button>
       <button class="btn-primary" id="modal-confirm-btn">Add Selected</button>
     </div>`;
 
   document.getElementById('modal-backdrop').classList.remove('hidden');
   document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+  document.getElementById('modal-unselect-btn').addEventListener('click', () => {
+    content.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  });
   document.getElementById('modal-confirm-btn').addEventListener('click', () => {
     const selected = Array.from(
       content.querySelectorAll('input[type="checkbox"]:checked')
