@@ -80,11 +80,6 @@ body {
   line-height: 1.5;
 }
 
-.btn-logout {
-  font-size: 13px;
-  padding: 5px 10px;
-  white-space: nowrap;
-}
 
 #app {
   max-width: 680px;
@@ -108,6 +103,25 @@ header {
   border-bottom: 1px solid var(--border);
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
+
+.header-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.btn-logout-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+.btn-logout-icon:hover { color: var(--danger); }
 
 h1 {
   font-size: 22px;
