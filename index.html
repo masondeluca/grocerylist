@@ -7,6 +7,20 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- Login screen -->
+  <div id="login-screen" class="hidden">
+    <div id="login-card">
+      <h1>Grocery List</h1>
+      <p class="login-subtitle">Sign in to sync your data across devices</p>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="your@email.com" required />
+        <button type="submit" class="btn-primary">Send Magic Link</button>
+      </form>
+      <p id="login-message" class="hidden"></p>
+    </div>
+  </div>
+
   <div id="app">
     <header>
       <h1>Grocery List</h1>
@@ -14,6 +28,7 @@
         <button class="tab-btn active" data-tab="grocery">Grocery List</button>
         <button class="tab-btn" data-tab="meals">Meals</button>
       </nav>
+      <button id="logout-btn" class="btn-ghost btn-logout">Sign out</button>
     </header>
 
     <!-- Grocery List Tab -->
@@ -70,6 +85,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

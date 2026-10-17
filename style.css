@@ -29,6 +29,63 @@ body {
   line-height: 1.5;
 }
 
+/* Login screen */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+#login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+#login-card h1 { font-size: 22px; font-weight: 700; }
+
+.login-subtitle { font-size: 14px; color: var(--text-secondary); }
+
+#login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#login-form input[type="email"] {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 12px;
+  outline: none;
+  font-size: 16px;
+}
+
+#login-form input[type="email"]:focus { border-color: var(--accent); }
+
+#login-form .btn-primary { width: 100%; padding: 10px; }
+
+#login-message {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.btn-logout {
+  font-size: 13px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
 #app {
   max-width: 680px;
   margin: 0 auto;

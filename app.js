@@ -1,3 +1,37 @@
+// ─── Supabase ─────────────────────────────────────────────────────────────────
+
+const SUPABASE_URL = 'https://hpnbsdtweopkimpzfssb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_XtLX0LFRb3rvBrHx-T8Fxw_3xyTyI6h';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+
+async function loadFromCloud() {
+  if (!currentUser) return false;
+  const { data, error } = await db
+    .from('user_data')
+    .select('categories, items, meals')
+    .eq('user_id', currentUser.id)
+    .single();
+  if (error || !data) return false;
+  state.categories = data.categories || [];
+  state.items      = data.items      || [];
+  state.meals      = data.meals      || [];
+  saveToLocalStorage();
+  return true;
+}
+
+async function saveToCloud() {
+  if (!currentUser) return;
+  await db.from('user_data').upsert({
+    user_id:    currentUser.id,
+    categories: state.categories,
+    items:      state.items,
+    meals:      state.meals,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id' });
+}
+
 // ─── State ────────────────────────────────────────────────────────────────────
 
 const state = {
@@ -11,18 +45,23 @@ const state = {
 
 function loadState() {
   try {
-    state.items      = JSON.parse(localStorage.getItem('groceryItems'))  || [];
-    state.categories = JSON.parse(localStorage.getItem('categories'))    || [];
-    state.meals      = JSON.parse(localStorage.getItem('meals'))         || [];
+    state.items      = JSON.parse(localStorage.getItem('groceryItems')) || [];
+    state.categories = JSON.parse(localStorage.getItem('categories'))   || [];
+    state.meals      = JSON.parse(localStorage.getItem('meals'))        || [];
   } catch (e) {
     state.items = []; state.categories = []; state.meals = [];
   }
 }
 
-function saveState() {
+function saveToLocalStorage() {
   localStorage.setItem('groceryItems', JSON.stringify(state.items));
   localStorage.setItem('categories',   JSON.stringify(state.categories));
   localStorage.setItem('meals',        JSON.stringify(state.meals));
+}
+
+function saveState() {
+  saveToLocalStorage();
+  saveToCloud();
 }
 
 // ─── ID generation ────────────────────────────────────────────────────────────
@@ -551,7 +590,11 @@ function render() {
 
 // ─── Event wiring ─────────────────────────────────────────────────────────────
 
+let eventsWired = false;
 function wireEvents() {
+  if (eventsWired) return;
+  eventsWired = true;
+
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
@@ -912,8 +955,66 @@ function startCategoryEdit(chip, catId) {
   });
 }
 
+// ─── Auth UI ──────────────────────────────────────────────────────────────────
+
+function showLoginScreen() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+}
+
+function showApp() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+}
+
+function wireAuthEvents() {
+  document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const msg   = document.getElementById('login-message');
+    const btn   = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    const { error } = await db.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: 'https://masondeluca.github.io/grocerylist/' },
+    });
+    btn.disabled = false;
+    btn.textContent = 'Send Magic Link';
+    msg.classList.remove('hidden');
+    msg.textContent = error
+      ? `Error: ${error.message}`
+      : `Check your email — a magic link has been sent to ${email}`;
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await db.auth.signOut();
+  });
+}
+
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 
-loadState();
-wireEvents();
-render();
+async function boot() {
+  wireAuthEvents();
+
+  const { data: { session } } = await db.auth.getSession();
+
+  db.auth.onAuthStateChange(async (_event, session) => {
+    if (session) {
+      currentUser = session.user;
+      loadState();
+      const cloudLoaded = await loadFromCloud();
+      if (!cloudLoaded) saveToCloud();
+      wireEvents();
+      render();
+      showApp();
+    } else {
+      currentUser = null;
+      showLoginScreen();
+    }
+  });
+
+  if (!session) showLoginScreen();
+}
+
+boot();
